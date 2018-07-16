@@ -1,4 +1,14 @@
 body{
-	font-family: Arial;
-	font-size: 20px;
+	font-family: Georgia;
+	font-size: 4vh;
+	text-align: center;
+}
+
+.title{
+	font-size: 8vh;
+	color: blue;
+}
+
+u.login{
+
 }
