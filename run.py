@@ -1,11 +1,30 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, flash, redirect
+from config import Config
+import forms
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
+app.config.from_object(Config)
 
-@app.route('/')
-def hello():
+@app.route('/index')
+def index():
     return render_template('index.html')
 
+@app.route('/')
+def home():
+    return redirect('/index')
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    login_form = forms.LoginForm()
+    if login_form.validate_on_submit():
+        flash('Login requested for user {}, remember_me={}'.format(
+            login_form.username.data, login_form.remember_me.data))
+        return redirect('/index')
+    return render_template('login.html', login_form = login_form)
 
 
 
