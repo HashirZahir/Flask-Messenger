@@ -6,7 +6,7 @@ from flask_login import LoginManager, UserMixin
 # create an instance of SQLAlchemy and LoginManager to pass on to run.py
 db = SQLAlchemy()
 login_manager = LoginManager()
-login.login_view = 'login'
+login_manager.login_view = 'login'
 
 
 @login_manager.user_loader
@@ -22,7 +22,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    messages = db.Relationship('Post', backref='author', lazy='dynamic')
+    messages = db.relationship('Post', backref='author', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

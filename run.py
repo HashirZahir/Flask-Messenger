@@ -4,7 +4,7 @@ import forms
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from models import db, User, login_manager
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.config.from_object(Config)
@@ -46,7 +46,7 @@ def login():
         return redirect(url_for('/index'))
     return render_template('login.html', login_form = login_form)
 
-@app.route('/logout'):
+@app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('login'))
