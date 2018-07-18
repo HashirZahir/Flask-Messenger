@@ -2,8 +2,43 @@
 
 {% block content %}
 
-<a href="/signup"><u>Sign Up</u></a>
-<br><br>
-<a href="/login"><u>Login</u></a>
+<h1><u>Sign Up</u></h1>
+    <form action="" method="post" novalidate>
+        {{ signup_form.hidden_tag() }}
+        <p>
+            {{ signup_form.username.label }}:
+            {{ signup_form.username(size=32) }} <br>
+
+            {% for error in signup_form.username.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ signup_form.email.label }}:
+            {{ signup_form.email(size=32) }} <br>
+
+            {% for error in signup_form.email.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ signup_form.password.label }}:
+            {{ signup_form.password(size=32) }} <br>
+
+            {% for error in signup_form.password.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ signup_form.password_repeat.label }}:
+            {{ signup_form.password_repeat(size=32) }} <br>
+
+            {% for error in signup_form.password_repeat.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+
+        <p>{{ signup_form.submit() }}</p>
+    </form>
 
 {% endblock %}
