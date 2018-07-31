@@ -28,3 +28,12 @@ class SignUpForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Account with this email already exists')
+
+
+class ChatWithForm(FlaskForm):
+    username = StringField('Chat with Username:', validators=[InputRequired(),Length(min=5,max=20)])
+    submit = SubmitField('Submit')
+
+class ChatForm(FlaskForm):
+    message_text = StringField(render_kw={"placeholder": "Type a message"}, validators=[InputRequired()])
+    submit = SubmitField('Send')

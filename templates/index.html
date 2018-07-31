@@ -1,5 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <h2>Start Chat</h2>
+    <form action=" {{ url_for('index') }} " method="post">
+        {{ chatwith_form.hidden_tag() }}
+        <p>
+            {{ chatwith_form.username.label }}
+            {{ chatwith_form.username(size=32) }} <br>
+
+            {% for error in chatwith_form.username.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+        <p> {{ chatwith_form.submit() }} </p>
+        
+    </form>
+
+    {% if thread.name %}
+        <h3> {{ thread.name }} </h3>
+        {% for message in thread.messages %}
+            <p> {{ message.message_text }} </p>
+        {% endfor %}
+        <form action="" method="post">
+            {{ chatwith_form.hidden_tag() }}
+            {{ chat_form.message_text(size=100) }}
+            {{ chat_form.submit() }}
+        </form>
+    {% endif %}
 
 {% endblock %}

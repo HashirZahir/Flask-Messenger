@@ -1,11 +1,15 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, abort
 from config import Config
-from forms import LoginForm, SignUpForm
+from forms import LoginForm, SignUpForm, ChatWithForm, ChatForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.urls import url_parse
-from models import db, User, login_manager
+from models import db, User, Message, Thread, users, login_manager
 from flask_login import current_user, login_user, logout_user, login_required
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.config.from_object(Config)
@@ -18,11 +22,50 @@ def init():
     with app.app_context():
         db.create_all()
 
-@app.route('/index')
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    return render_template('index.html')
+    chatwith_form = ChatWithForm()
+    if chatwith_form.validate_on_submit():
+        user = User.query.filter_by(
+            username=chatwith_form.username.data).first()
+
+        if user is None:
+            flash("User does not exist")
+        else:
+            threads_user = db.session.query(users).filter_by(user_id=user.id).all()
+            threads_current_user = db.session.query(users).filter_by(user_id=current_user.id).all()
+            for thread_user in threads_user:
+                for thread_current_user in threads_current_user:
+                    if thread_user.thread_id == thread_current_user.thread_id:
+                        return redirect(url_for('chat', thread_id=thread_user.thread_id))
+            
+            thread = Thread(name=user.username)
+            thread.users.append(user)
+            thread.users.append(current_user)
+            db.session.add(thread)
+            db.session.commit()
+            return redirect(url_for('chat', thread_id=thread.id))
+    return render_template('index.html', title='Chat', chatwith_form=chatwith_form, thread=None)
+
+@app.route('/<thread_id>', methods=['GET', 'POST'])
+@login_required
+def chat(thread_id):
+    thread = Thread.query.filter_by(id=thread_id).first()
+    chat_form = ChatForm()
+    chatwith_form = ChatWithForm()
+    if chat_form.validate_on_submit():
+        # TODO: implement insertion and update DB
+        message = Message(message_text=chat_form.message_text.data)
+        thread.messages.append(message)
+        db.session.add(thread)
+        db.session.commit()
+    if thread is None:
+        flash('Error: No such user')
+        return redirect(url_for('index'))  
+    return render_template('index.html', title='Chat', chatwith_form=chatwith_form, 
+                                                                chat_form=chat_form,thread=thread) 
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -60,7 +103,7 @@ def login():
         login_user(user,remember = login_form.remember_me.data)
         flash('Logged in successfully.')
         next_page = request.args.get('next')
-        # is_safe_url should check if the url is safe for redirects.
+        # check if the url is safe for redirects.
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
@@ -73,5 +116,5 @@ def logout():
 
 
 if __name__ == '__main__':
-    #init()
+    init()
     app.run()
