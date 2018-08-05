@@ -51,18 +51,19 @@ def index():
 @app.route('/<thread_id>', methods=['GET', 'POST'])
 @login_required
 def chat(thread_id):
-    thread = Thread.query.filter_by(id=thread_id).first()
+    thread = Thread.query.get(thread_id)
+    logger.info('thread: %s', thread_id)
     chat_form = ChatForm()
     chatwith_form = ChatWithForm()
-    if chat_form.validate_on_submit():
-        # TODO: implement insertion and update DB
-        message = Message(message_text=chat_form.message_text.data)
-        thread.messages.append(message)
-        db.session.add(thread)
-        db.session.commit()
     if thread is None:
         flash('Error: No such user')
         return redirect(url_for('index'))  
+    if chat_form.validate_on_submit():
+        # TODO: implement insertion and update DB
+        message = Message(message_text=chat_form.message_text.data, author_id=current_user.id)
+        thread.messages.append(message)
+        db.session.add(thread)
+        db.session.commit()
     return render_template('index.html', title='Chat', chatwith_form=chatwith_form, 
                                                                 chat_form=chat_form,thread=thread) 
 

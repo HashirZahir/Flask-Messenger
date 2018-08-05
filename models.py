@@ -75,8 +75,8 @@ class Message(db.Model):
     __tablename__ = "message"
 
     id = db.Column(db.Integer, primary_key=True)
-    thread_id = db.Column(db.Integer, db.ForeignKey('thread.id'), primary_key=True)
-    author_id = db.Column(db.Integer, default=User.id)
+    thread_id = db.Column(db.Integer, db.ForeignKey('thread.id'))
+    author_id = db.Column(db.Integer)
     message_text = db.Column(db.String(1000))
     time_stamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
