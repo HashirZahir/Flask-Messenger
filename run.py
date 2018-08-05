@@ -48,7 +48,7 @@ def index():
             return redirect(url_for('chat', thread_id=thread.id))
     return render_template('index.html', title='Chat', chatwith_form=chatwith_form, thread=None)
 
-@app.route('/<thread_id>', methods=['GET', 'POST'])
+@app.route('/<int:thread_id>', methods=['GET', 'POST'])
 @login_required
 def chat(thread_id):
     thread = Thread.query.get(thread_id)
