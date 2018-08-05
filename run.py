@@ -33,6 +33,7 @@ def index():
         if user is None:
             flash("User does not exist")
         else:
+            # minor bug: chatting with yourself shows messages of 1st thread created
             threads_user = db.session.query(users).filter_by(user_id=user.id).all()
             threads_current_user = db.session.query(users).filter_by(user_id=current_user.id).all()
             for thread_user in threads_user:

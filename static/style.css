@@ -12,3 +12,9 @@ body{
 u.login{
 
 }
+
+.DivWithScroll{
+    height:240px;
+    overflow:scroll;
+    overflow-x:hidden;
+}

@@ -50,6 +50,7 @@ class Thread(db.Model):
     __tablename__ = "thread"
 
     id = db.Column(db.Integer, primary_key=True)
+    # name: thread name for groups. TODO: default value for one to one chats
     name = db.Column(db.String(50), nullable=False)
     messages = db.relationship('Message', backref='thread', lazy=True)
     users = db.relationship('User', secondary=users, lazy='subquery',
@@ -57,17 +58,6 @@ class Thread(db.Model):
 
     def __repr__(self):
         return '<Thread: {}>'.format(self.id) 
-
-
-# class ThreadParticipants(db.Model):
-#      __tablename__ = "thread_participant"
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     thread_id = db.Column(db.Integer, db.ForeignKey('thread.id'), primary_key=True)
-#     user_id = 
-
-#     def __repr__(self):
-#         return '<Thread: {}>'.format(self.id) 
 
 # messages in each thread
 class Message(db.Model):
