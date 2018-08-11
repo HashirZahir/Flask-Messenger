@@ -36,4 +36,4 @@ class ChatWithForm(FlaskForm):
 
 class ChatForm(FlaskForm):
     message_text = StringField(render_kw={"placeholder": "Type a message"}, validators=[InputRequired()])
-    submit = SubmitField('Send')
+    send = SubmitField('Send')

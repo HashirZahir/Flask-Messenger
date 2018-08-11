@@ -23,10 +23,10 @@
                 <p> {{ message.author_id }}: {{ message.message_text }} </p>
             {% endfor %}
         </div>
-        <form action="" method="post">
-            {{ chatwith_form.hidden_tag() }}
+        <form id="chat" action="" method="post">
+            {{ chat_form.hidden_tag() }}
             {{ chat_form.message_text(size=100) }}
-            {{ chat_form.submit() }}
+            {{ chat_form.send() }}
         </form>
     {% endif %}
 
