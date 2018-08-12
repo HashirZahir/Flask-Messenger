@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from werkzeug.urls import url_parse
 from models import db, User, Message, Thread, users, login_manager
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_socketio import SocketIO, emit, join_room, leave_room
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +17,7 @@ app.config.from_object(Config)
 db.init_app(app)
 # migrate = Migrate(app, db)
 login_manager.init_app(app)
+socketio = SocketIO(app)
 
 #initialize database tables once
 def init():
@@ -59,14 +61,36 @@ def chat(thread_id):
     if thread is None:
         flash('Error: No such user')
         return redirect(url_for('index'))  
-    if chat_form.validate_on_submit():
-        # TODO: implement insertion and update DB
-        message = Message(message_text=chat_form.message_text.data, author_id=current_user.id)
-        thread.messages.append(message)
-        db.session.add(thread)
-        db.session.commit()
+    # previous code using html forms to chat, needing to refresh webpage
+    # to receive updates
+    #
+    # if chat_form.validate_on_submit():
+    #     message = Message(message_text=chat_form.message_text.data, author_id=current_user.id)
+    #     thread.messages.append(message)
+    #     db.session.add(thread)
+    #     db.session.commit()
     return render_template('index.html', title='Chat', chatwith_form=chatwith_form, 
                                                                 chat_form=chat_form,thread=thread) 
+
+@socketio.on('joined')
+def joined(message):
+    logger.info('joined: ' + str(message))
+
+@socketio.on('server-message')
+def update_db(client_message):
+    logger.info('Received Client Message: '+ str(client_message))
+    thread = Thread.query.get(client_message['thread_id'])
+    message = Message(message_text=client_message['message_text'], author_id=current_user.id)
+    thread.messages.append(message)
+    db.session.add(thread)
+    db.session.commit()
+    server_message = {
+        'author_id':  message.author_id,
+        'message_text': message.message_text,
+        'thread_id': message.thread_id
+    }
+    #emit('server-to-client', server_message, room=client_message['room'])
+    emit('server-to-client', server_message)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -119,4 +143,4 @@ def logout():
 
 if __name__ == '__main__':
     init()
-    app.run()
+    socketio.run(app)
