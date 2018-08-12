@@ -23,11 +23,15 @@
                 <p> {{ message.author_id }}: {{ message.message_text }} </p>
             {% endfor %}
         </div>
-        <form id="chat" action="" method="post">
+        <!-- <form id="chat" action="" method="post">
             {{ chat_form.hidden_tag() }}
             {{ chat_form.message_text(size=100) }}
             {{ chat_form.send() }}
-        </form>
+        </form> -->
+        <div id="chat">
+            <input id="message_text" placeholder="Type a message" required="" size="100" type="text" value="">
+            <button id="send" type="submit">Send</button>
+        </div>
     {% endif %}
 
 {% endblock %}
